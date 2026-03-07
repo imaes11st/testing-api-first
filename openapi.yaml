@@ -9,7 +9,7 @@ components:
   schemas:
     HelloResponse:
       type: object
-    product:
+    Product:
       type: object
       required:
       - name
@@ -18,11 +18,11 @@ components:
       properties:
         name:
           type: string
-          minlength: 2
-          maxlength: 40
+          minLength: 2
+          maxLength: 40
         description:
           type: string
-          maxlength: 500
+          maxLength: 500
         price:
           type: number
           minimum: 0
@@ -34,16 +34,17 @@ components:
           type: array
           items:
             type: string
-            minlength: 1
-          inStock:
-            type: boolean
-          specifications:
+            minLength: 1
+        inStock:
+          type: boolean
+        specifications:
+          type: object
+          additionalProperties:
+            type: string
+        rating:
+          type: array
+          items:
             type: object
-            additionalProperties:
-              type: string
-          rating:
-            type: array
-            items:
             required:
             - score
             - comment
@@ -54,7 +55,7 @@ components:
                 maximum: 5
               comment:
                 type: string
-                maxlength: 200
+                maxLength: 200
                       
 paths:
   /hello:
@@ -193,10 +194,123 @@ paths:
                 properties:
                   message:
                     type: string
-components:
-  schemas:  
-    HelloResponse:
-      type: object
-      properties:
-        message:
-          type: string
+  /productos:
+    get:
+      summary: Obtener todos los productos
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: Crear un nuevo producto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Producto creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Datos inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /productos/{id}:
+    get:
+      summary: Obtener producto por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    put:
+      summary: Actualizar producto
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Producto actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Datos inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    delete:
+      summary: Eliminar producto
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Producto eliminado
+        '404':
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
