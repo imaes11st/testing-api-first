@@ -2,9 +2,12 @@ const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const OpenApiValidator = require('express-openapi-validator');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const port = 3000;
+
+const JWT_SECRET = process.env.JWT_SECRET || 'change-me-to-a-secure-secret';
 
 // Load OpenAPI document
 const swaggerDocument = YAML.load('./openapi.yaml');
@@ -23,6 +26,30 @@ app.use(
     ignorePaths: /.*\/docs.*/,
   })
 );
+
+// JWT authentication middleware (applies only to product create/update/delete)
+app.use((req, res, next) => {
+  const protectedPaths = ['/productos', '/v1/productos'];
+  const isProductPath = protectedPaths.some(path => req.path.startsWith(path));
+  const isProtectedMethod = ['POST', 'PUT', 'DELETE'].includes(req.method);
+
+  if (!isProductPath || !isProtectedMethod) {
+    return next();
+  }
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Token de autorización faltante o inválido' });
+  }
+
+  const token = authHeader.slice(7);
+  try {
+    req.user = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: 'Token inválido' });
+  }
+});
 
 // In-memory storage
 let users = [
@@ -91,6 +118,25 @@ app.get('/v1/hello', (req, res) => {
 app.get('/v2/hello', (req, res) => {
   res.json({
     message: 'Hello, World!', version: 'v2', timestamp: new Date().toISOString()
+  });
+});
+
+// AUTHENTICATION (JWT)
+app.post(['/auth/login', '/v1/auth/login'], (req, res) => {
+  const { email, password } = req.body;
+
+  const user = users.find(u => u.email === email);
+  if (!user || password !== 'SuperSecret123') {
+    return res.status(401).json({ message: 'Credenciales inválidas' });
+  }
+
+  const token = jwt.sign({ sub: user.id, email: user.email }, JWT_SECRET, {
+    expiresIn: '1h'
+  });
+
+  res.json({
+    accessToken: token,
+    tokenType: 'Bearer'
   });
 });
 

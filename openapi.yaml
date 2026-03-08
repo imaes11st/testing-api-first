@@ -88,7 +88,39 @@ components:
             comment: "Excelente sonido y comodidad."
           - score: 4
             comment: "Buena relación calidad-precio."
-                      
+    AuthRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      example:
+        email: "maria.perez@example.com"
+        password: "SuperSecret123"
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+          example: Bearer
+      example:
+        accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        tokenType: "Bearer"
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Autenticación mediante JSON Web Token (JWT)."
+security: []
 paths:
   /hello:
     get:
@@ -102,6 +134,39 @@ paths:
                 $ref: '#/components/schemas/HelloResponse'
               example:
                 message: "Hola desde API Store"
+  /auth/login:
+    post:
+      tags:
+        - Users
+      summary: Autenticar usuario y obtener JWT
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Token JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                tokenType: "Bearer"
+        '401':
+          description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: "Credenciales inválidas"
   /users:
     post:
       tags:
@@ -298,6 +363,8 @@ paths:
       tags:
           - Products
       summary: Crear un nuevo producto
+      security:
+        - JWT: []
       requestBody:
         required: true
         content:
@@ -406,6 +473,8 @@ paths:
       tags:
           - Products
       summary: Actualizar producto
+      security:
+        - JWT: []
       parameters:
         - in: path
           name: id
@@ -485,6 +554,8 @@ paths:
       tags:
           - Products
       summary: Eliminar producto
+      security:
+        - JWT: []
       parameters:
         - in: path
           name: id
