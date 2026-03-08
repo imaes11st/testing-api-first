@@ -1,8 +1,13 @@
 openapi: 3.1.1
 info:
-  title: API First Try
-  version: 1.0.0 
-  description: API First Try
+  title: API Store
+  version: 1.0.1 
+  description: API WITH OPENAPI
+tags:
+  - name: Users
+    description: Operations related to users
+  - name: Products
+    description: Operations related to products
 servers:
   - url: http://localhost:3000/v1
     description: Version 1 de API
@@ -73,6 +78,8 @@ paths:
                 $ref: '#/components/schemas/HelloResponse'
   /users:
     post:
+      tags:
+        - Users
       summary: Create a new user
       requestBody:
         required: true
@@ -112,6 +119,8 @@ paths:
                     type: string
   /users/{id}:
     get:
+      tags:
+          - Users
       summary: Get user by ID
       parameters:
         - in: path
@@ -145,6 +154,8 @@ paths:
                   message:
                     type: string        
     post:
+      tags:
+          - Users
       summary: Update user information
       parameters:
         - in: path
@@ -199,6 +210,8 @@ paths:
                     type: string
   /productos:
     get:
+      tags:
+          - Products
       summary: Obtener todos los productos
       responses:
         '200':
@@ -210,6 +223,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/Product'
     post:
+      tags:
+          - Products
       summary: Crear un nuevo producto
       requestBody:
         required: true
@@ -235,6 +250,8 @@ paths:
                     type: string
   /productos/{id}:
     get:
+      tags:
+          - Products
       summary: Obtener producto por ID
       parameters:
         - in: path
@@ -259,6 +276,8 @@ paths:
                   message:
                     type: string
     put:
+      tags:
+          - Products
       summary: Actualizar producto
       parameters:
         - in: path
@@ -298,6 +317,8 @@ paths:
                   message:
                     type: string
     delete:
+      tags:
+          - Products
       summary: Eliminar producto
       parameters:
         - in: path
