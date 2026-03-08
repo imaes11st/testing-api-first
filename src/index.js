@@ -82,9 +82,15 @@ let products = [
 ];
 
 // HELLO
-app.get('/hello', (req, res) => {
+app.get('/v1/hello', (req, res) => {
   res.json({
     message: 'Hello, World!'
+  });
+});
+
+app.get('/v2/hello', (req, res) => {
+  res.json({
+    message: 'Hello, World!', version: 'v2', timestamp: new Date().toISOString()
   });
 });
 
@@ -228,4 +234,6 @@ app.delete('/productos/:id', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  console.log('http://localhost:${port}/v1');
+  console.log('http://localhost:${port}/v2');
 });
