@@ -95,7 +95,7 @@ app.get('/v2/hello', (req, res) => {
 });
 
 // CREATE USER
-app.post('/users', (req, res) => {
+app.post(['/users', '/v1/users'], (req, res) => {
   const { name, age, email } = req.body;
 
   const newUser = {
@@ -111,7 +111,7 @@ app.post('/users', (req, res) => {
 });
 
 // GET USER BY ID
-app.get('/users/:id', (req, res) => {
+app.get(['/users/:id', '/v1/users/:id'], (req, res) => {
   const userId = parseInt(req.params.id);
 
   const user = users.find(u => u.id === userId);
@@ -126,7 +126,7 @@ app.get('/users/:id', (req, res) => {
 });
 
 // UPDATE USER
-app.post('/users/:id', (req, res) => {
+app.post(['/users/:id', '/v1/users/:id'], (req, res) => {
   const userId = parseInt(req.params.id);
   const { name, age, email } = req.body;
 
@@ -151,12 +151,12 @@ app.post('/users/:id', (req, res) => {
 // PRODUCT ROUTES
 
 // GET ALL PRODUCTS
-app.get('/productos', (req, res) => {
+app.get(['/productos', '/v1/productos'], (req, res) => {
   res.json(products);
 });
 
 // CREATE PRODUCT
-app.post('/productos', (req, res) => {
+app.post(['/productos', '/v1/productos'], (req, res) => {
   const { name, description, price, category, tags, inStock, specifications, rating } = req.body;
 
   const newProduct = {
@@ -177,7 +177,7 @@ app.post('/productos', (req, res) => {
 });
 
 // GET PRODUCT BY ID
-app.get('/productos/:id', (req, res) => {
+app.get(['/productos/:id', '/v1/productos/:id'], (req, res) => {
   const productId = parseInt(req.params.id);
 
   const product = products.find(p => p.id === productId);
@@ -190,7 +190,7 @@ app.get('/productos/:id', (req, res) => {
 });
 
 // UPDATE PRODUCT
-app.put('/productos/:id', (req, res) => {
+app.put(['/productos/:id', '/v1/productos/:id'], (req, res) => {
   const productId = parseInt(req.params.id);
   const { name, description, price, category, tags, inStock, specifications, rating } = req.body;
 
@@ -218,7 +218,7 @@ app.put('/productos/:id', (req, res) => {
 });
 
 // DELETE PRODUCT
-app.delete('/productos/:id', (req, res) => {
+app.delete(['/productos/:id', '/v1/productos/:id'], (req, res) => {
   const productId = parseInt(req.params.id);
 
   const productIndex = products.findIndex(p => p.id === productId);
